@@ -30,13 +30,15 @@ const resolvers = {
             const token = signToken(user)
             return { token, user }
         },
-        saveBook: async (parent, { author, description, title, bookId, link, image, }, context) => {
+        saveBook: async (parent, args, context) => {
+            console.log(args.input)
             if (context.user) {
                 const user = await User.findOneAndUpdate(
                     { _id: context.user._id },
-                    { $push: { savedBooks: { author, description, title, bookId, link, image } } },
+                    { $addToSet: { savedBooks: args.input } },
                     { new: true, runValidators: true }
                 )
+                console.log(user)
                 return user
             }
             throw new AuthenticationError("User must be logged in to use this feature!")
