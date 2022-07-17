@@ -30,21 +30,21 @@ const resolvers = {
             const token = signToken(user)
             return { token, user }
         },
-        saveBook: async (parent, { userId, bookData }, context) => {
+        saveBook: async (parent, { author, description, title, bookId, link, image, }, context) => {
             if (context.user) {
                 const user = await User.findOneAndUpdate(
-                    { _id: userId },
-                    { $push: { savedBooks: { bookData } } },
+                    { _id: context.user._id },
+                    { $push: { savedBooks: { author, description, title, bookId, link, image } } },
                     { new: true, runValidators: true }
                 )
                 return user
             }
             throw new AuthenticationError("User must be logged in to use this feature!")
         },
-        removeBook: async (parent, { userId, bookId }, context) => {
+        removeBook: async (parent, { bookId }, context) => {
             if (context.user) {
                 const user = await User.findOneAndUpdate(
-                    { _id: userId },
+                    { _id: context.user._id },
                     { $pull: { savedBooks: { bookId: bookId } } },
                     { new: true }
                 )
